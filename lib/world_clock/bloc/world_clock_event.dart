@@ -6,3 +6,14 @@ abstract class WorldClockEvent extends Equatable {
   @override
   List<Object> get props => [];
 }
+
+class WorldClockTicked extends WorldClockEvent {
+  WorldClockTicked(this.dateTime);
+  final DateTime dateTime;
+}
+
+class WorldClockOffsetChanged extends WorldClockEvent {
+  WorldClockOffsetChanged();
+
+  //TODO: Define how UTC Offset is represented
+}
