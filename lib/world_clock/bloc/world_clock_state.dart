@@ -5,7 +5,7 @@ abstract class WorldClockState extends Equatable {
   final DateTime dateTime;
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => [dateTime];
 }
 
 class WorldClockInitial extends WorldClockState {

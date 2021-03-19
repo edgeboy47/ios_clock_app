@@ -25,5 +25,20 @@ void main() {
               const Duration(milliseconds: 100),
           isTrue);
     });
+
+    blocTest<WorldClockBloc, WorldClockState>(
+      'Bloc is emitting a new WorldClockRunning state every second',
+      build: () {
+        return WorldClockBloc(const WorldClock());
+      },
+      wait: const Duration(seconds: 5),
+      expect: () => [
+        isA<WorldClockRunning>(),
+        isA<WorldClockRunning>(),
+        isA<WorldClockRunning>(),
+        isA<WorldClockRunning>(),
+        isA<WorldClockRunning>(),
+      ],
+    );
   });
 }

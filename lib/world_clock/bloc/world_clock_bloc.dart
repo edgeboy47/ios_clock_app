@@ -13,7 +13,7 @@ class WorldClockBloc extends Bloc<WorldClockEvent, WorldClockState> {
         .listen((dateTime) => add(WorldClockTicked(dateTime)));
   }
 
-  late final WorldClock _worldClock;
+  final WorldClock _worldClock;
   late final StreamSubscription<DateTime> _worldClockSubscription;
 
   @override
@@ -21,18 +21,13 @@ class WorldClockBloc extends Bloc<WorldClockEvent, WorldClockState> {
     WorldClockEvent event,
   ) async* {
     if (event is WorldClockTicked) {
-      yield* _mapWorldClockTickedToStream(event);
+      yield WorldClockRunning(event.dateTime);
     }
   }
 
   @override
-  Future<void> close() {
-    _worldClockSubscription.cancel();
+  Future<void> close() async {
+    await _worldClockSubscription.cancel();
     return super.close();
-  }
-
-  Stream<WorldClockState> _mapWorldClockTickedToStream(
-      WorldClockTicked event) async* {
-    yield WorldClockRunning(event.dateTime);
   }
 }
