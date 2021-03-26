@@ -11,6 +11,7 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      checkerboardOffscreenLayers: true,
       theme: Themes.lightTheme,
       darkTheme: Themes.darkTheme,
       home: Scaffold(
@@ -24,6 +25,7 @@ class App extends StatelessWidget {
                   child: BlocProvider(
                     create: (context) => WorldClockBloc(const WorldClock()),
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         const _TopSettingsRow(),
                         const _DigitalClock(),
@@ -48,7 +50,7 @@ class _DigitalClock extends StatelessWidget {
     Key? key,
   }) : super(key: key);
 
-  String _formattedDateTime(DateTime dt) {
+  static String formattedDateTime(DateTime dt) {
     final String _hour;
 
     if (dt.hour == 0)
@@ -74,7 +76,7 @@ class _DigitalClock extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  _formattedDateTime(dateTime),
+                  formattedDateTime(dateTime),
                   style: Theme.of(context).textTheme.headline1,
                 ),
                 RotatedBox(
@@ -242,13 +244,71 @@ class _CitiesList extends StatelessWidget {
       height: 200,
       child: ListView.builder(
           scrollDirection: Axis.horizontal,
-          itemCount: 5,
+          physics: const BouncingScrollPhysics(),
+          itemCount: 2,
           itemBuilder: (context, i) {
-            return const Placeholder(
-              fallbackHeight: 176,
-              fallbackWidth: 233,
-            );
+            return const _CityCard();
           }),
+    );
+  }
+}
+
+class _CityCard extends StatelessWidget {
+  const _CityCard({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 233,
+      height: 176,
+      child: Card(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        color: Theme.of(context).canvasColor,
+        child: Stack(
+          children: [
+            Positioned(
+              top: 16,
+              left: 20,
+              child: Text(
+                'New York, USA',
+                style: Theme.of(context).textTheme.bodyText1,
+              ),
+            ),
+            Positioned(
+              top: 48,
+              left: 20,
+              child: Text(
+                '+3 HRS | EST',
+                style: Theme.of(context).textTheme.caption,
+              ),
+            ),
+            Positioned(
+              bottom: 20,
+              right: 20,
+              child: BlocBuilder<WorldClockBloc, WorldClockState>(
+                builder: (context, state) {
+                  return Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        _DigitalClock.formattedDateTime(state.dateTime),
+                        style: Theme.of(context).textTheme.headline4,
+                      ),
+                      RotatedBox(
+                        quarterTurns: 3,
+                        child: Text(
+                          state.dateTime.hour < 12 ? 'AM' : 'PM',
+                          style: Theme.of(context).textTheme.caption,
+                        ),
+                      )
+                    ],
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
